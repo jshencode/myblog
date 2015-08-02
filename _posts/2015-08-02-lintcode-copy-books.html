@@ -1,0 +1,65 @@
+---
+　　layout: default
+　　title: copy books lintcode
+---
+　　<h2>{{ page.title }}</h2>
+
+　　<p><b>Description: </b><br>Given an array A of integer with size of n( means n books and number of pages of each book) and k people to copy the book. You must distribute the continuous id books to one people to copy. (You can give book A[1],A[2] to one people, but you cannot give book A[1], A[3] to one people, because book A[1] and A[3] is not continuous.) Each person have can copy one page per minute. Return the number of smallest minutes need to copy all the books.</p>
+    
+    <p><b>Example: </b><br>
+        Given array A = [3,2,4], k = 2.
+Return 5( First person spends 5 minutes to copy book 1 and book 2 and second person spends 4 minutes to copy book 3. ) 
+    </p>
+
+    <div>
+    <p><b>Solution: </b><br></p>
+    <pre>
+    public class Solution {
+    /**
+     * @param pages: an array of integers
+     * @param k: an integer
+     * @return: an integer
+     */
+    public int copyBooks(int[] pages, int k) {
+        // write your code here
+        int n = pages.length;
+        int[][] dp = new int[n+1][k+1];
+    
+        // f(i, k) = min(min(f(i-j, k-1), sum(i-j+1, i)))
+        int sum = 0;
+        int max = Integer.MIN_VALUE;
+        for (int i = 1; i<=n; i++) {
+            sum += pages[i-1];
+            dp[i][1] = sum;
+            max = Math.max(max, pages[i-1]);
+        }
+        
+        if (k >= n) {
+            return max;
+        }
+        
+        for (int i = 2; i<=n; i++) {
+            int total = dp[i][1];
+            for (int j = 2; j<=Math.min(i, k); j++) {
+                dp[i][j] = Integer.MAX_VALUE; 
+                for (int s = 1; i-s>=j-1; s++) {
+                    dp[i][j] = Math.min(dp[i][j], 
+                        Math.max(dp[i-s][j-1], total-dp[i-s][1])
+                    );
+                }
+            }
+        }
+        return dp[n][k];
+    }
+
+    public static void main(String[] args) {
+        int[] A = {3,2,4};
+        int k = 2;
+        Solution solution = new Solution();
+        System.out.println(solution.copyBooks(A, k));
+    }
+}
+    </pre>
+</div>
+    
+　　<p>{{ page.date | date_to_string }}</p>
